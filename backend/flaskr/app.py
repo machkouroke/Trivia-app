@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from backend.flaskr.models import Question, Category
-from config import app
+from backend.flaskr.config import app
 
 QUESTIONS_PER_PAGE = 10
 
@@ -17,6 +17,7 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
     return response
+
 
 @app.route("/api/categories")
 def all_categories():
@@ -40,6 +41,8 @@ you should see questions and categories generated,
 ten questions per page and pagination at the bottom of the screen for three pages.
 Clicking on the page numbers should update the questions.
 """
+
+
 @app.route("/api/questions")
 def all_questions():
     questions = Question.query.all()
@@ -49,6 +52,8 @@ def all_questions():
         "totalQuestions": len(questions),
         "questions": {question.format()["id"]: question.format()["type"] for question in questions[start:end]}
     })
+
+
 """
 @TODO:
 Create an endpoint to DELETE question using a question ID.
