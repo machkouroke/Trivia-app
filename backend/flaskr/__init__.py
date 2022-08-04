@@ -4,9 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from backend.models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -26,7 +27,6 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
-
 
     """
     @TODO:
@@ -99,4 +99,3 @@ def create_app(test_config=None):
     """
 
     return app
-
