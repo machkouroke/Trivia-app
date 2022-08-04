@@ -1,6 +1,5 @@
 import unittest
 
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from backend.flaskr import create_app
 from backend.flaskr.config import setup_db
@@ -49,7 +48,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
 
     def test_delete_questions(self):
-        id_question = 9
+        id_question = 20
         res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
         data = res.get_json()
         self.assertEqual(res.status_code, 200)

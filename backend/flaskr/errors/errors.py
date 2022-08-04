@@ -2,12 +2,15 @@ from flask import jsonify
 
 
 def error(app):
+    """
+    Error handling
+    """
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": "Not found (Hint: check your Id)"
+            "message": "Not found (Hint: check your Url)"
         }), 404
 
     @app.errorhandler(422)

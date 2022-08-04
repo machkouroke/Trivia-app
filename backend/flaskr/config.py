@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 
 database_name = 'trivia'
 database_path = f'postgresql://machk:machkour@localhost:5432/{database_name}'
-
+QUESTIONS_PER_PAGE = 10
 db = SQLAlchemy()
 
 
