@@ -1,8 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from backend.flaskr.models import Question, Category
-from backend.flaskr.config import app
+from backend.flaskr.config import app, db
+from backend.flaskr.errors import errors
 
 QUESTIONS_PER_PAGE = 10
 
@@ -29,20 +31,6 @@ def all_categories():
     })
 
 
-"""
-@TODO:
-Create an endpoint to handle GET requests for questions,
-including pagination (every 10 questions).
-This endpoint should return a list of questions,
-number of total questions, current category, categories.
-
-TEST: At this point, when you start the application
-you should see questions and categories generated,
-ten questions per page and pagination at the bottom of the screen for three pages.
-Clicking on the page numbers should update the questions.
-"""
-
-
 @app.route("/api/questions")
 def all_questions():
     questions = Question.query.all()
@@ -50,17 +38,31 @@ def all_questions():
     end = start + QUESTIONS_PER_PAGE
     return jsonify({
         "totalQuestions": len(questions),
-        "questions": {question.format()["id"]: question.format()["type"] for question in questions[start:end]}
+        "questions": [question.format() for question in questions[start:end]],
+        "categories": {category.format()["id"]: category.format()["type"] for category in Category.query.all()},
     })
 
 
-"""
-@TODO:
-Create an endpoint to DELETE question using a question ID.
+@app.route("/api/questions/<int:id_question>/delete", methods=["DELETE"])
+def delete_questions(id_question: int):
+    error = False
+    try:
+        db.session.delete(Question.query.get(id_question))
+        db.session.commit()
+    # Appears when the question does not exist
+    except UnmappedInstanceError:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+        if error:
+            abort(404)
 
-TEST: When you click the trash icon next to a question, the question will be removed.
-This removal will persist in the database and when you refresh the page.
-"""
+    return jsonify({
+        "success": True,
+        "message": f"Question with id:{id_question} is deleted"
+    })
+
 
 """
 @TODO:

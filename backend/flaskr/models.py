@@ -1,15 +1,14 @@
-from sqlalchemy import Column, String, Integer, create_engine, Text
 from backend.flaskr.config import db
 
 
 class Question(db.Model):
     __tablename__ = 'questions'
 
-    id = Column(Integer, primary_key=True)
-    question = Column(Text())
-    answer = Column(Text())
-    category = Column(Integer, db.ForeignKey('categories.id'))
-    difficulty = Column(Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text())
+    answer = db.Column(db.Text())
+    category = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    difficulty = db.Column(db.Integer)
 
     def __init__(self, question, answer, category, difficulty):
         self.question = question
@@ -21,7 +20,8 @@ class Question(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update(self):
+    @staticmethod
+    def update():
         db.session.commit()
 
     def delete(self):
@@ -41,9 +41,9 @@ class Question(db.Model):
 class Category(db.Model):
     __tablename__ = 'categories'
 
-    id = Column(Integer, primary_key=True)
-    type = Column(Text())
-    questions = db.relationship('Question', backref='category', lazy=True)
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Text())
+    question = db.relationship('Question', backref=db.backref('type', lazy=True, cascade="delete, save-update"))
 
     def __init__(self, type):
         self.type = type
