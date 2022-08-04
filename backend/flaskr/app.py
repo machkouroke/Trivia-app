@@ -1,17 +1,18 @@
-from flask import Flask, jsonify, request, abort
+from random import choice
+
+from flask import jsonify, request, abort
 from flask_cors import CORS
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from backend.flaskr.models import Question, Category
 from backend.flaskr.config import app, db
 from backend.flaskr.errors import errors
+import logging
 
 QUESTIONS_PER_PAGE = 10
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-"""
-@TODO: Use the after_request decorator to set Access-Control-Allow
-"""
 
 
 @app.after_request
@@ -21,7 +22,7 @@ def after_request(response):
     return response
 
 
-@app.route("/api/categories")
+@app.route("/api/categories", methods=["GET"])
 def all_categories():
     categories = Category.query.all()
     start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
@@ -31,7 +32,7 @@ def all_categories():
     })
 
 
-@app.route("/api/questions")
+@app.route("/api/questions", methods=["GET"])
 def all_questions():
     questions = Question.query.all()
     start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
@@ -43,20 +44,23 @@ def all_questions():
     })
 
 
-@app.route("/api/questions/<int:id_question>/delete", methods=["DELETE"])
+@app.route("/api/questions/<int:id_question>", methods=["DELETE"])
 def delete_questions(id_question: int):
-    error = False
+    error: tuple[bool, None | int] = (False, None)
     try:
         db.session.delete(Question.query.get(id_question))
         db.session.commit()
     # Appears when the question does not exist
     except UnmappedInstanceError:
         db.session.rollback()
-        error = True
+        error = (True, 404)
+    except Exception as e:
+        logging.error(f'{type(e)}: {e}')
+        error = (True, 500)
     finally:
         db.session.close()
-        if error:
-            abort(404)
+        if error[0]:
+            abort(error[1])
 
     return jsonify({
         "success": True,
@@ -64,54 +68,76 @@ def delete_questions(id_question: int):
     })
 
 
-"""
-@TODO:
-Create an endpoint to POST a new question,
-which will require the question and answer text,
-category, and difficulty score.
+@app.route('/api/questions', methods=['POST'])
+def create_question():
+    error: tuple[bool, None | int] = (False, None)
+    try:
+        question = Question(
+            question=request.get_json()['question'],
+            answer=request.get_json()['answer'],
+            category=request.get_json()['category'],
+            difficulty=request.get_json()['difficulty']
+        )
+        question.insert()
 
-TEST: When you submit a question on the "Add" tab,
-the form will clear and the question will appear at the end of the last page
-of the questions list in the "List" tab.
-"""
+    except IntegrityError:
+        db.session.rollback()
+        abort(422)
+    except Exception as e:
+        logging.error(f'{type(e)}: {e}')
+        error = (True, 500)
+    finally:
+        db.session.close()
+        if error[0]:
+            abort(error[1])
 
-"""
-@TODO:
-Create a POST endpoint to get questions based on a search term.
-It should return any questions for whom the search term
-is a substring of the question.
+    return jsonify({
+        "success": True,
+        "message": "Question added successfully"
+    })
 
-TEST: Search by any phrase. The questions list will update to include
-only question that include that string within their question.
-Try using the word "title" to start.
-"""
 
-"""
-@TODO:
-Create a GET endpoint to get questions based on category.
+@app.route('/api/questions/search', methods=['POST'])
+def search_question():
+    search_term = request.get_json()['searchTerm']
+    questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+    return jsonify({
+        "success": True,
+        "questions": [question.format() for question in questions],
+        "totalQuestions": len(questions)
+    })
 
-TEST: In the "List" tab / main screen, clicking on one of the
-categories in the left column will cause only questions of that
-category to be shown.
-"""
 
-"""
-@TODO:
-Create a POST endpoint to get questions to play the quiz.
-This endpoint should take category and previous question parameters
-and return a random questions within the given category,
-if provided, and that is not one of the previous questions.
+@app.route('/api/questions/<int:id_category>', methods=['GET'])
+def get_questions_by_category(id_category: int):
+    questions = Category.query.get(id_category).question
+    return jsonify({
+        "success": True,
+        "questions": [question.format() for question in questions],
+        "totalQuestions": len(questions)
+    })
 
-TEST: In the "Play" tab, after a user selects "All" or a category,
-one question at a time is displayed, the user is allowed to answer
-and shown whether they were correct or not.
-"""
 
-"""
-@TODO:
-Create error handlers for all expected errors
-including 404 and 422.
-"""
+@app.route('/api/quizzes', methods=['POST'])
+def get_quiz_questions():
+    try:
+        data: dict = request.get_json()
+        category: int = Category.query.filter_by(type=data['category']).first().id
+
+        # With .with_entities the ids are returned as a tuple (id, ) to
+        # facilitate comparison with the data sent in the requests we will convert them to integer
+        all_question_list: list = [x[0] for x in Question.query.filter_by(category=category).with_entities(Question.id)]
+        new_question = list(set(all_question_list) - set(data['questions']))
+        return jsonify({
+            "success": True,
+            "question": Question.query.get(choice(new_question)).format()
+        })
+    except KeyError:
+        abort(400)
+    except Exception as e:
+        logging.error(f'{type(e)}: {e}')
+        abort(500)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
