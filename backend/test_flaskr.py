@@ -58,6 +58,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['message'])
+
     def test_delete_questions(self):
         """
         Delete the last question inserted
@@ -69,13 +70,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'Question with id:{id_question} is deleted')
 
-
-
     def test_404_for_failed_delete_questions(self):
         id_question = 100
         res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
         data = res.get_json()
-        print(data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Not found (Hint: check your Url)')

@@ -15,7 +15,6 @@ def quiz(app):
     def get_quiz_questions():
         try:
             data: dict = request.get_json()
-            print(data)
             category: Category = Category.query.filter_by(id=data['quiz_category']['id']).one_or_none()
             # Id == 0 means all categories
             if data['quiz_category']['id'] == 0:
