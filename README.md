@@ -1,6 +1,7 @@
 # Udacitrivia
 ## What is Udacitrivia?
 Trivia is a simple and complete general knowledge application to pass your free time
+![image](https://user-images.githubusercontent.com/40785379/183159243-b76679a8-6022-4b2e-88ed-6b1ea8350f6b.png)
 
 
 
