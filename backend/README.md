@@ -64,5 +64,5 @@ If you want to run tests at home please follow these instructions:
 dropdb trivia_test && createdb trivia_test
 psql trivia_test < trivia.psql
 cd ..
-python backend/test_flaskr.py
+python -m unittest backend/test_flaskr.py 
 ```
