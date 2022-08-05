@@ -5,8 +5,6 @@
 :
 
 CODEOWNERS,a\b\abe895765c4ce08c5dfbc95e5e3c5db67ff92ded
-B
-frontend/README.md,6\a\6a3a36e34dda2b89c027f00ac950371695b13c75
 Q
 !frontend/src/components/Header.js,6\9\693a075a3e8487cf1e866d67452df746eb660bed
 S

@@ -21,6 +21,7 @@ project ([See API documentation](#api-documentation)).
 
 The [frontend](./frontend/README.md) directory contains a complete React frontend to consume the data from the Flask
 server.
+> View the [Frontend README](./frontend/README.md) for more details .
 
 ## <span id="api-documentation">API Reference</span>
 
