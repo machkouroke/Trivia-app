@@ -1,26 +1,18 @@
 # Udacitrivia
 ## What is Udacitrivia?
+
 Trivia is a simple and complete general knowledge application to pass your free time
+
+
 ![image](https://user-images.githubusercontent.com/40785379/183159243-b76679a8-6022-4b2e-88ed-6b1ea8350f6b.png)
 
-
-
-## Starting and Submitting the Project
-
-[Fork](https://help.github.com/en/articles/fork-a-repo) the project repository and [clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom.
-
-## About the Stack
-
-We started the full stack application for you. It is designed with some key functional areas:
+## Getting Started
+To try the application at home, you will have to launch the backend server then the frontend one
 
 ### Backend
+This directory contains the question generation API that you could also use for your personal project (See API documentation)
 
-The [backend](./backend/README.md) directory contains a partially completed Flask and SQLAlchemy server. You will work primarily in `__init__.py` to define your endpoints and can reference models.py for DB and SQLAlchemy setup. These are the files you'd want to edit in the backend:
-
-1. `backend/flaskr/__init__.py`
-2. `backend/test_flaskr.py`
-
-> View the [Backend README](./backend/README.md) for more details.
+> View the [Backend README](./backend/README.md) for more details .
 
 ### Frontend
 
