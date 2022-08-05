@@ -13,7 +13,7 @@ python3 --version
 - Linux Command Line
 ```bash
 python3 -m venv env
-source env\Scripts\activate
+source env/Scripts/activate
 ```
 3. Install dependencies
 ```bash
