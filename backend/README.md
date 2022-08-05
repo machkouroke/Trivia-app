@@ -50,7 +50,7 @@ From within the root directory first ensure you are working using your created v
 To run the server, execute:
 
 ```bash
-cd backend/flaskr
+cd flaskr
 flask run --reload
 ```
 
