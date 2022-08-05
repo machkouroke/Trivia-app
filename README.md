@@ -190,6 +190,7 @@ The API will return four error types when requests fail:
   `
   curl -X POST -H "Content-Type: application/json" -d '{"question": "This is a question", "answer": "This is an
   answer", "difficulty": 5, "category": 4}' http://127.0.0.1:5000/questions
+  
   `
 
     ```json
@@ -204,6 +205,7 @@ The API will return four error types when requests fail:
 - General:
     - Deletes a given question
 - Sample:`curl -X DELETE http://127.0.0.1:5000/questions/2
+
     ```json
     {
       "success": true,
@@ -218,6 +220,7 @@ The API will return four error types when requests fail:
     - The request body must contain a JSON object with the following keys:
         - `searchTerm`: The search term
 - Sample (search for "history"):
+
   `curl -X POST -H "Content-Type: application/json" -d '{"searchTerm": "history"}' http://127.0.0.1:5000/questions/search`
     ```json
     {
@@ -244,6 +247,7 @@ The API will return four error types when requests fail:
         - `previous_questions`: The previous questions already answered
 - Sample: `curl -X POST -H "Content-Type: application/json" -d '{"quiz_category": {"type": "History", "id": 4},
   "previous_questions": [1, 4, 20, 15]}' http://127.0.0.1:5000/quizzes`
+  
     ```json
     {
       "success": true,
