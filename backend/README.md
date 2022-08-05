@@ -3,6 +3,7 @@
 ## Setting up the Backend
 
 ### Install Dependencies
+In your `backend` directory:
 
 1. Make sure python 3.7 or higher is installed on your machine
 ```bash
