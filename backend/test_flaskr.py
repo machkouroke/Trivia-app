@@ -1,12 +1,12 @@
 import unittest
 
 from flask_sqlalchemy import SQLAlchemy
-from backend.flaskr import create_app
+from backend.flaskr import create_app, Question
 from backend.flaskr.config import setup_db
 
-API_QUIZZES = '/api/quizzes'
-
-API_QUESTIONS = '/api/questions'
+API_QUIZZES = '/quizzes'
+API_CATEGORIES = '/categories'
+API_QUESTIONS = '/questions'
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -32,7 +32,7 @@ class TriviaTestCase(unittest.TestCase):
         pass
 
     def test_get_all_categories(self):
-        res = self.client().get('/api/categories')
+        res = self.client().get(API_CATEGORIES)
         data = res.get_json()
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -47,23 +47,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['totalQuestions'])
         self.assertTrue(data['categories'])
 
-    def test_delete_questions(self):
-        id_question = 20
-        res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
-        data = res.get_json()
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertEqual(data['message'], f'Question with id:{id_question} is deleted')
-
-    def test_404_for_failed_delete_questions(self):
-        id_question = 100
-        res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
-        data = res.get_json()
-        print(data)
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Not found (Hint: check your Id)')
-
     def test_create_question(self):
         res = self.client().post(API_QUESTIONS, json={
             'question': 'What is the capital of France?',
@@ -75,6 +58,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['message'])
+    def test_delete_questions(self):
+        """
+        Delete the last question inserted
+        """
+        id_question = Question.query.order_by(Question.id).all()[-1].id
+        res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
+        data = res.get_json()
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'Question with id:{id_question} is deleted')
+
+
+
+    def test_404_for_failed_delete_questions(self):
+        id_question = 100
+        res = self.client().delete(f'{API_QUESTIONS}/{id_question}')
+        data = res.get_json()
+        print(data)
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not found (Hint: check your Url)')
 
     def test_422_for_failed_create_question(self):
         res = self.client().post(API_QUESTIONS, json={
@@ -100,7 +104,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['totalQuestions'])
 
     def test_get_questions_by_category(self):
-        res = self.client().get(f'{API_QUESTIONS}/3')
+        res = self.client().get(f'{API_CATEGORIES}/5/questions')
         data = res.get_json()
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
@@ -109,8 +113,8 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_quiz_questions(self):
         res = self.client().post(API_QUIZZES, json={
-            'category': "Sports",
-            'questions': [12, 23, 16],
+            'quiz_category': {'type': "Sports", 'id': 6},
+            'previous_questions': [12, 23, 16],
         })
         data = res.get_json()
         self.assertEqual(res.status_code, 200)
@@ -119,8 +123,8 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_400_for_failed_get_quiz_questions(self):
         res = self.client().post(API_QUIZZES, json={
-            'category': "Technologie",
-            'questions': [12, 23, 16],
+            'quiz_category': {'type': "Techiou", 'id': 1000},
+            'previous_questions': [12, 23, 16],
         })
         data = res.get_json()
         self.assertEqual(res.status_code, 400)

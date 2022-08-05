@@ -8,7 +8,8 @@ def categories(app):
     """
     All categorizes endpoint
     """
-    @app.route("/api/categories", methods=["GET"])
+
+    @app.route("/categories", methods=["GET"])
     def all_categories():
         categories = Category.query.all()
         start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
@@ -16,4 +17,13 @@ def categories(app):
         return jsonify({
             "success": True,
             "categories": {category.format()["id"]: category.format()["type"] for category in categories[start:end]}
+        })
+
+    @app.route('/categories/<int:id_category>/questions', methods=['GET'])
+    def get_questions_by_category(id_category: int):
+        questions = Category.query.get(id_category).questions
+        return jsonify({
+            "success": True,
+            "questions": [question.format() for question in questions],
+            "totalQuestions": len(questions)
         })

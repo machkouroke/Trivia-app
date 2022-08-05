@@ -1,13 +1,29 @@
 from backend.flaskr.config import db
 
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Text())
+    questions = db.relationship('Question', backref='type', lazy=True, cascade='all, delete')
+
+    def __init__(self, type):
+        self.type = type
+
+    def format(self):
+        return {
+            'id': self.id,
+            'type': self.type
+        }
+
+
 class Question(db.Model):
     __tablename__ = 'questions'
 
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text())
     answer = db.Column(db.Text())
-    category = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    category = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete='cascade'))
     difficulty = db.Column(db.Integer)
 
     def __init__(self, question, answer, category, difficulty):
@@ -35,21 +51,4 @@ class Question(db.Model):
             'answer': self.answer,
             'category': self.category,
             'difficulty': self.difficulty
-        }
-
-
-class Category(db.Model):
-    __tablename__ = 'categories'
-
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.Text())
-    question = db.relationship('Question', backref=db.backref('type', lazy=True, cascade="delete, save-update"))
-
-    def __init__(self, type):
-        self.type = type
-
-    def format(self):
-        return {
-            'id': self.id,
-            'type': self.type
         }

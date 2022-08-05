@@ -15,9 +15,9 @@ from backend.flaskr.models.models import Category, Question
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
-    setup_db(app)
+    setup_db(app, with_migrations=True)
 
-    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
     @app.after_request
     def after_request(response):
