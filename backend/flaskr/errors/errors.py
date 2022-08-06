@@ -1,16 +1,18 @@
 from flask import jsonify
+from werkzeug.exceptions import NotFound
 
 
 def error(app):
     """
     Error handling
     """
+
     @app.errorhandler(404)
-    def not_found(error):
+    def not_found(error: NotFound):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": "Not found (Hint: check your Url)"
+            "message": "Not found: {error.description}",
         }), 404
 
     @app.errorhandler(422)
@@ -26,7 +28,8 @@ def error(app):
         return jsonify({
             "success": False,
             "error": 400,
-            "message": "Bad request (Hint: Check if the category exists or if the keys of the body are correct)"
+            "message": "Bad request (Hint: Check if the category exists or if the keys of the body are correct)",
+            "error_name": f"{error}"
         }), 400
 
     @app.errorhandler(500)
