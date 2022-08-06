@@ -1,6 +1,6 @@
 from flask import request, jsonify, abort
 
-from backend.flaskr.config import QUESTIONS_PER_PAGE, paginate
+from backend.flaskr.utils import paginate
 from backend.flaskr.models.models import Category
 
 

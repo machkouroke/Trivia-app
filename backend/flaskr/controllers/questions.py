@@ -6,7 +6,8 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from backend.flaskr import db
 from backend.flaskr.models.models import Category, Question
-from backend.flaskr.config import QUESTIONS_PER_PAGE, setup_logging, paginate
+from backend.flaskr.config import setup_logging
+from backend.flaskr.utils import paginate
 
 
 def questions(app):
