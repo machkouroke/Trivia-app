@@ -1,8 +1,9 @@
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from backend.settings import DB_NAME, DB_USER, DB_PASSWORD
 
-database_name = 'trivia'
-database_path = f'postgresql://machk:machkour@localhost:5432/{database_name}'
+database_name = DB_NAME
+database_path = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{database_name}'
 QUESTIONS_PER_PAGE = 10
 db = SQLAlchemy()
 
@@ -15,5 +16,3 @@ def setup_db(app, database_path=database_path, with_migrations=False):
     db.create_all()
     if with_migrations:
         migrate = Migrate(app, db)
-
-

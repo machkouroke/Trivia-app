@@ -10,8 +10,6 @@ from backend.flaskr.errors.errors import error
 from backend.flaskr.models.models import Category, Question
 
 
-
-
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
