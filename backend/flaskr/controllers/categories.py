@@ -21,9 +21,10 @@ def categories(app):
 
     @app.route('/categories/<int:id_category>/questions', methods=['GET'])
     def get_questions_by_category(id_category: int):
-        questions = Category.query.get(id_category).questions
+        category = Category.query.get(id_category)
         return jsonify({
             "success": True,
-            "questions": [question.format() for question in questions],
-            "totalQuestions": len(questions)
+            "questions": [question.format() for question in category.questions],
+            "totalQuestions": len(category.questions),
+            'currentCategory': category.type
         })

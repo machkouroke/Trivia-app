@@ -39,6 +39,8 @@ def quiz(app):
         # The user request is not valid
         except (KeyError, AttributeError):
             abort(400)
-        except Exception as e:
-            logging.error(f'{type(e)}: {e}')
-            abort(500)
+        except Exception:
+            return jsonify({
+                "success": False,
+                "question": ''
+            })

@@ -88,7 +88,7 @@ def questions(app):
             "success": True,
             "questions": [question.format() for question in questions],
             "totalQuestions": len(questions),
-
+            'currentCategory': None
         })
 
 
