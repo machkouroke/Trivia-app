@@ -4,6 +4,7 @@ from random import choice
 from flask import request, jsonify, abort
 
 from backend.flaskr.models.models import Category, Question
+from backend.flaskr.config import setup_logging
 
 
 def quiz(app):
@@ -39,7 +40,8 @@ def quiz(app):
         # The user request is not valid
         except (KeyError, AttributeError):
             abort(400)
-        except Exception:
+        except Exception as e:
+            setup_logging().debug(f"{type(e)}:{e}")
             return jsonify({
                 "success": False,
                 "question": ''
