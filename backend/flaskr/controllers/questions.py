@@ -82,7 +82,11 @@ def questions(app):
 
     @app.route('/questions/search', methods=['POST'])
     def search_question():
-        search_term = request.get_json()['searchTerm']
+
+        request_data = request.get_json()
+        if 'searchTerm' not in request_data:
+            abort(400)
+        search_term = request_data['searchTerm']
         questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
         return jsonify({
             "success": True,

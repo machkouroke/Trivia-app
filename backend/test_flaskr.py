@@ -102,6 +102,16 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])
         self.assertTrue(data['totalQuestions'])
 
+    def test_400_for_search_question(self):
+        res = self.client().post(f'{API_QUESTIONS}/search', json={
+            'searchTer': ''
+        })
+        data = res.get_json()
+        self.assertEqual(res.status_code, 400)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'],
+                         'Bad request (Hint: Check if the category exists or if the keys of the body are correct)')
+
     def test_get_questions_by_category(self):
         res = self.client().get(f'{API_CATEGORIES}/5/questions')
         data = res.get_json()
