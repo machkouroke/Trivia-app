@@ -110,6 +110,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])
         self.assertTrue(data['totalQuestions'])
 
+    def test_404_for_get_questions_by_category(self):
+        res = self.client().get(f'{API_CATEGORIES}/100/questions')
+        data = res.get_json()
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Not found (Hint: check your Url)')
+
     def test_get_quiz_questions(self):
         res = self.client().post(API_QUIZZES, json={
             'quiz_category': {'type': "Sports", 'id': 6},

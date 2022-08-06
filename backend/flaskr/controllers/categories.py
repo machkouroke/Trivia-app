@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, abort
 
 from backend.flaskr.config import QUESTIONS_PER_PAGE
 from backend.flaskr.models.models import Category
@@ -22,6 +22,8 @@ def categories(app):
     @app.route('/categories/<int:id_category>/questions', methods=['GET'])
     def get_questions_by_category(id_category: int):
         category = Category.query.get(id_category)
+        if category is None:
+            abort(404)
         return jsonify({
             "success": True,
             "questions": [question.format() for question in category.questions],
