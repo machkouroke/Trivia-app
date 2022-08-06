@@ -39,6 +39,17 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['categories'])
 
+    def test_400_for_get_all_categories(self):
+        """
+        When the specified page is out of range, this error is returned.
+        """
+        for i in {0, 100}:
+            res = self.client().get(f'{API_CATEGORIES}?page={i}')
+            data = res.get_json()
+            self.assertEqual(res.status_code, 400)
+            self.assertFalse(data['success'])
+            self.assertTrue(data['message'])
+
     def test_get_all_questions(self):
         res = self.client().get(API_QUESTIONS)
         data = res.get_json()
