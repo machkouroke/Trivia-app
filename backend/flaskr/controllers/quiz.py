@@ -1,4 +1,3 @@
-import logging
 from random import choice
 
 from flask import request, jsonify, abort
@@ -21,7 +20,7 @@ def quiz(app):
             if data['quiz_category']['id'] == 0:
                 all_question_list: list = [x[0] for x in
                                            Question.query.with_entities(
-                                            Question.id)]
+                                               Question.id)]
             elif category is None:
                 raise AttributeError
             # With .with_entities the ids are returned as a tuple (id, ) to
@@ -40,9 +39,13 @@ def quiz(app):
         # The user request is not valid
         except (KeyError, AttributeError):
             abort(400)
+
+        # When there are no more questions (new_questions is empty) in the category that have not been asked yet
+        except IndexError:
+            return jsonify({
+                "success": True,
+                "question": None
+            })
         except Exception as e:
             setup_logging().debug(f"{type(e)}:{e}")
-            return jsonify({
-                "success": False,
-                "question": ''
-            })
+            abort(500)
