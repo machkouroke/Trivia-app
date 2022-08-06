@@ -1,7 +1,7 @@
 import unittest
 
 from flask_sqlalchemy import SQLAlchemy
-from backend.flaskr import create_app, Question
+from backend.flaskr import create_app, Question, Category
 from backend.flaskr.config import setup_db
 from settings import DB_TEST_NAME, DB_USER, DB_PASSWORD
 
@@ -156,6 +156,21 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['question'])
+
+    def test_get_quiz_questions__full(self):
+        """
+        Checks if when all the questions of a given category are
+        already full the api returns None For the questions
+        """
+        category_id = 6
+        res = self.client().post(API_QUIZZES, json={
+            'quiz_category': {'type': "Sports", 'id': category_id},
+            'previous_questions': [x.id for x in Category.query.get(category_id).questions],
+        })
+        data = res.get_json()
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertFalse(data['question'])
 
     def test_400_for_failed_get_quiz_questions(self):
         res = self.client().post(API_QUIZZES, json={
