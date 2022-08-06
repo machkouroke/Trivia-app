@@ -8,11 +8,11 @@ def error(app):
     """
 
     @app.errorhandler(404)
-    def not_found(error: NotFound):
+    def not_found(error):
         return jsonify({
             "success": False,
             "error": 404,
-            "message": "Not found: {error.description}",
+            "message": f"Not found: {error.description}",
         }), 404
 
     @app.errorhandler(422)
@@ -20,7 +20,7 @@ def error(app):
         return jsonify({
             "success": False,
             "error": 422,
-            "message": "Data is Unprocessable (Hint: Check if the category exists)"
+            "message": f"Data is Unprocessable : {error.description}"
         }), 422
 
     @app.errorhandler(400)
@@ -28,7 +28,7 @@ def error(app):
         return jsonify({
             "success": False,
             "error": 400,
-            "message": "Bad request (Hint: Check if the category exists or if the keys of the body are correct)",
+            "message": f"Bad request: {error.description}",
             "error_name": f"{error}"
         }), 400
 

@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from backend.flaskr import db
 from backend.flaskr.models.models import Category, Question
-from backend.flaskr.config import QUESTIONS_PER_PAGE
+from backend.flaskr.config import QUESTIONS_PER_PAGE, setup_logging
 
 
 def questions(app):
@@ -17,6 +17,8 @@ def questions(app):
     @app.route("/questions", methods=["GET"])
     def all_questions():
         questions = Question.query.all()
+        if not questions:
+            abort(404, "No questions found")
         start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         return jsonify({
@@ -29,23 +31,21 @@ def questions(app):
 
     @app.route("/questions/<int:id_question>", methods=["DELETE"])
     def delete_questions(id_question: int):
-        error: tuple[bool, None | int] = (False, None)
+        error: tuple[bool, None | int, str] = (False, None, "")
         try:
-
             db.session.delete(Question.query.get(id_question))
             db.session.commit()
         # Appears when the question does not exist
         except UnmappedInstanceError:
             db.session.rollback()
-            error = (True, 404)
+            error = (True, 404, "There is no question with this id")
         except Exception as e:
-            logging.error(f'{type(e)}: {e}')
-            error = (True, 500)
+            setup_logging().debug(f"{type(e)}:{e}")
+            error = (True, 500, "Internal Server error")
         finally:
-
             db.session.close()
             if error[0]:
-                abort(404)
+                abort(error[1], error[2])
 
         return jsonify({
             "success": True,
@@ -68,7 +68,7 @@ def questions(app):
             db.session.rollback()
             abort(422)
         except Exception as e:
-            logging.error(f'{type(e)}: {e}')
+            setup_logging().debug(f"{type(e)}:{e}")
             error = (True, 500)
         finally:
             db.session.close()

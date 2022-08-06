@@ -89,8 +89,7 @@ class TriviaTestCase(unittest.TestCase):
         data = res.get_json()
         self.assertEqual(res.status_code, 422)
         self.assertFalse(data['success'])
-        self.assertEqual(data['message'],
-                         'Data is Unprocessable (Hint: Check if the category exists)')
+        self.assertTrue(data['message'])
 
     def test_search_question(self):
         res = self.client().post(f'{API_QUESTIONS}/search', json={

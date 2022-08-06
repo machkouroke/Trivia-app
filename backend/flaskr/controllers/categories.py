@@ -12,6 +12,8 @@ def categories(app):
     @app.route("/categories", methods=["GET"])
     def all_categories():
         categories = Category.query.all()
+        if not categories:
+            abort(404, "No categories found")
         start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         return jsonify({
@@ -23,7 +25,7 @@ def categories(app):
     def get_questions_by_category(id_category: int):
         category = Category.query.get(id_category)
         if category is None:
-            abort(404)
+            abort(404, 'There are no categories with this id in the database')
         return jsonify({
             "success": True,
             "questions": [question.format() for question in category.questions],
