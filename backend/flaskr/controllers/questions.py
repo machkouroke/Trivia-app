@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from backend.flaskr import db
 from backend.flaskr.models.models import Category, Question
-from backend.flaskr.config import QUESTIONS_PER_PAGE, setup_logging
+from backend.flaskr.config import QUESTIONS_PER_PAGE, setup_logging, paginate
 
 
 def questions(app):
@@ -17,14 +17,15 @@ def questions(app):
     @app.route("/questions", methods=["GET"])
     def all_questions():
         questions = Question.query.all()
+
+        # Error handling
         if not questions:
             abort(404, "No questions found")
-        start = (request.args.get('page', 1, type=int) - 1) * QUESTIONS_PER_PAGE
-        end = start + QUESTIONS_PER_PAGE
+
         return jsonify({
             "success": True,
             "totalQuestions": len(questions),
-            "questions": [question.format() for question in questions[start:end]],
+            "questions": [question.format() for question in paginate(request, questions)],
             "categories": {category.format()["id"]: category.format()["type"] for category in Category.query.all()},
             "currentCategory": None
         })

@@ -1,14 +1,29 @@
+from flask import abort
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from backend.settings import DB_NAME, DB_USER, DB_PASSWORD
 import logging
 from datetime import datetime
 
+QUESTIONS_PER_PAGE = 10
+
+
+def paginate(request, data):
+    page = request.args.get('page', 1, type=int)
+    if page < 1:
+        abort(400, "Page number must be greater than 0")
+    if page > len(data) // QUESTIONS_PER_PAGE + 1:
+        abort(400, f"Page number must be less than or equal to {len(data) // QUESTIONS_PER_PAGE + 1}")
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+    return data[start:end]
+
+
 """Db config"""
 
 database_name = DB_NAME
 database_path = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{database_name}'
-QUESTIONS_PER_PAGE = 10
+
 db = SQLAlchemy()
 
 

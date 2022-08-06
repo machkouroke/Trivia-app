@@ -48,6 +48,17 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['totalQuestions'])
         self.assertTrue(data['categories'])
 
+    def test_400_for_get_all_questions(self):
+        """
+        When the specified page is out of range, this error is returned.
+        """
+        for i in {0, 100}:
+            res = self.client().get(f'{API_QUESTIONS}?page={i}')
+            data = res.get_json()
+            self.assertEqual(res.status_code, 400)
+            self.assertFalse(data['success'])
+            self.assertTrue(data['message'])
+
     def test_create_question(self):
         res = self.client().post(API_QUESTIONS, json={
             'question': 'What is the capital of France?',
